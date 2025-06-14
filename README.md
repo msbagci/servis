@@ -100,4 +100,4 @@ pip install python-dateutil
 Bu proje MIT Lisansı altında lisanslanmıştır.
 Lisans, bu projenin özgürce kullanılmasına, değiştirilmesine ve dağıtılmasına izin verir. Ancak, yazılım “olduğu gibi” sağlanır ve herhangi bir garanti sunulmaz.
 
-Ayrıntılı bilgi için  ([LICENSE](LICENSE) dosyasını inceleyebilirsiniz.
+Ayrıntılı bilgi için  [LICENSE](LICENSE) dosyasını inceleyebilirsiniz.
