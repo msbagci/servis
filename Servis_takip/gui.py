@@ -26,6 +26,7 @@ def GUI():
             return
 
         try:
+            # Dosya UTF-8 BOM (Byte Order Mark) içerebileceğinden, encoding='utf-8-sig' kullanılmıştır.
             with open(dosya_yolu, newline='', encoding='utf-8-sig') as file:
                 liste = csv.DictReader(file)
                 for row in liste:
