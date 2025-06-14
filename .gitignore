@@ -192,3 +192,10 @@ cython_debug/
 #  refer to https://docs.cursor.com/context/ignore-files
 .cursorignore
 .cursorindexingignore
+
+
+# Ignore all CSV files
+*.csv
+
+# But keep the example CSV file
+!example.csv
