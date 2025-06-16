@@ -26,7 +26,7 @@ def GUI():
             return
 
         try:
-            # Dosya UTF-8 BOM (Byte Order Mark) içerebileceğinden, encoding='utf-8-sig' kullanılmıştır.
+            #Dosya UTF-8 BOM (Byte Order Mark) içerebileceğinden, encoding='utf-8-sig' kullanılmıştır.
             with open(dosya_yolu, newline='', encoding='utf-8-sig') as file:
                 liste = csv.DictReader(file)
                 for row in liste:
@@ -44,7 +44,7 @@ def GUI():
     root.title("Ürün Katalog Sistemi")
     root.geometry("400x400")
 
-    # Giriş alanları
+    #Giris alanlari
     tk.Label(root, text="Marka").pack()
     marka_entry = tk.Entry(root)
     marka_entry.pack()
@@ -68,6 +68,6 @@ def GUI():
     liste = tk.Listbox(root, width=60)
     liste.pack(pady=10)
 
-    #Guı yı calistirir
+    #Gui yi calistirir
     root.mainloop()
     
