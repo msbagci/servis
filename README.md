@@ -11,6 +11,7 @@ proje-klasoru/
 
 
 🧩 Dosya Açıklamaları
+
 **service.py**
 Uygulamanın veritabanı altyapısını ve iş mantığını içerir.
 
@@ -46,7 +47,7 @@ Servis durumu güncellenebilir.
 GUI açılabilir.
 
 **gui.py**
-Grafiksel kullanıcı arayüzünü içerir (örnek: Tkinter ile hazırlanmış olabilir).
+Grafiksel kullanıcı arayüzünü içerir (Tkinter ile hazırlanmış).
 
 Arayüz üzerinden ürün ekleme, listeleme ve sorgulama işlemleri yapılabilir.
 
@@ -97,6 +98,7 @@ pip install python-dateutil
 
 
 📄 Lisans
+
 Bu proje MIT Lisansı altında lisanslanmıştır.
 Lisans, bu projenin özgürce kullanılmasına, değiştirilmesine ve dağıtılmasına izin verir. Ancak, yazılım “olduğu gibi” sağlanır ve herhangi bir garanti sunulmaz.
 
