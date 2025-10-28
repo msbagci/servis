@@ -1,105 +1,105 @@
-Bu proje, satışı yapılan ürünlerin takibini yapmak, garanti süresini kontrol etmek ve servis işlemlerini kaydetmek amacıyla geliştirilmiş basit ama işlevsel bir Python uygulamasıdır. Hem komut satırından (terminal arayüzü) hem de grafik kullanıcı arayüzü (GUI) üzerinden kullanılabilir.
+This project is a simple yet functional Python application developed for tracking sold products, checking warranty periods, and recording service operations. It can be used both via the command line (terminal interface) and a graphical user interface (GUI).
 
-proje-klasoru/
-├── service.py
+project-folder/
+|── service.py
 ├── menu.py
 ├── gui.py
-├── example.csv           ← Örnek ürün kataloğu (sürüm kontrolüne dahil edilmez)
+├── example.csv           ← Sample product catalog (not included in version control)
 ├── .gitignore
 ├── README.md
-└── service.db            ← SQLite veritabanı (çalıştırıldığında otomatik oluşur)
+└── service.db            ← SQLite database (created automatically when run)
 
 
-🧩 Dosya Açıklamaları
+🧩 File Descriptions
 
 **service.py**
-Uygulamanın veritabanı altyapısını ve iş mantığını içerir.
+Contains the application's database infrastructure and business logic.
 
-SQLite kullanılarak 3 tablo oluşturulur:
+3 tables are created using SQLite:
 
-urun_katalog: Marka, model, garanti süresi gibi bilgiler.
+product_catalog: Information such as brand, model, and warranty period.
 
-urunler: Satılan ürünlerin satış tarihi ve seri numarası.
+products: Sell date and serial number of sold products.
 
-servis: Servise gelen ürünler, arıza bilgisi, servis ücreti ve durumu.
+service_records: Products sent for service, fault description, service fee, and status.
 
-Aynı zamanda:
+Additionally:
 
-Garanti kontrolü yapılabilir.
+Warranty checks can be performed.
 
-Ürün ve servis kayıtları listelenebilir.
+Product and service records can be listed.
 
-Servis durumu güncellenebilir.
+Service status can be updated.
 
-CSV dosyasından ürün yüklenebilir (UTF-8-BOM formatında olmalıdır).
+Products can be loaded from a CSV file (must be in UTF-8-BOM format).
 
 **menu.py**
-Terminal üzerinden kullanıcı etkileşimini sağlar.
+Provides user interaction via the terminal.
 
-Ana menü sistemi ile:
+Through the main menu system:
 
-Ürün ve servis kayıtları eklenebilir.
+Product and service records can be added.
+Warranty status can be queried.
 
-Garanti durumu sorgulanabilir.
+GUI can be launched.
 
-Servis durumu güncellenebilir.
 
-GUI açılabilir.
 
 **gui.py**
-Grafiksel kullanıcı arayüzünü içerir (Tkinter ile hazırlanmış).
+Contains the graphical user interface (developed with Tkinter).
 
-Arayüz üzerinden ürün ekleme, listeleme ve sorgulama işlemleri yapılabilir.
+Product adding, listing, and querying operations can be done through the interface.
 
-Detaylı bilgi GUI kodu incelenerek görülebilir.
+Detailed information can be seen by examining the GUI code.
 
-katalog.csv
-Örnek bir ürün kataloğu içeren dosyadır.
+**example.csv**
 
-Kullanıcılara nasıl toplu veri aktarımı yapılacağı gösterilir.
+A file containing a sample product catalog.
 
-Git versiyon kontrolüne dahil edilmez (.gitignore içinde dışlanmıştır).
+Shows users how to perform bulk data transfer.
+
+Excluded from Git version control (excluded in .gitignore).
 
 **service.db**
-SQLite veritabanı dosyasıdır.
+The SQLite database file.
 
-Uygulama ilk çalıştırıldığında otomatik olarak oluşturulur.
+Automatically created when the application is run for the first time.
 
-Tüm ürün ve servis bilgileri bu dosyada saklanır.
+All product and service information is stored in this file.
 
-⚙️ Özellikler
-Garanti Kontrolü: Ürünlerin garanti süresi, satış tarihine göre otomatik hesaplanır.
+⚙️ Features
+Warranty Check: The warranty period of products is automatically calculated based on the sell date.
 
-Ücretlendirme: Garanti süresi geçmişse servis ücreti girilir, aksi takdirde 0 olarak kaydedilir.
+Fee Calculation: Service fee is entered if the warranty period has expired; otherwise, it is recorded as 0.
 
-Servis Durumu: "Serviste" veya "Tamamlandı" gibi bilgiler kayıt altına alınır.
+Service Status: Information such as "In Service" or "Completed" is recorded.
 
-CSV Desteği: Dış kaynaklı ürün verileri kolayca içe aktarılabilir.
+CSV Support: External product data can be easily imported.
 
-GUI: Komut satırına ek olarak görsel arayüzle de kullanım imkânı.
+GUI: Provides the possibility of usage with a visual interface in addition to the command line.
 
-🔒 **.gitignore** Dosyası
-Projede yer alan .gitignore dosyası, aşağıdaki dosya ve klasörlerin Git tarafından izlenmemesini sağlar:
+🔒 **.gitignore** File
+The .gitignore file in the project ensures that the following files and folders are not tracked by Git:
 
-__pycache__/, *.pyc: Derleme önbellekleri
+__pycache__/, *.pyc: Compilation caches 
 
-*.db: SQLite veritabanı dosyaları (kişisel ve dinamik veriler içerdiği için)
+*.db: SQLite database files (because they contain personal and dynamic data) 
 
-example.csv: Kullanıcıya özel örnek veriler içerebilir
+example.csv: May contain user-specific sample data 
 
-Bu dosya sayesinde repoya gereksiz veya kişisel verilerin dahil edilmesi engellenir.
+Requirements
 
-Gereksinimler
-Python 3.7 veya üzeri
+Python 3.7 or higher 
 
-Gerekli kütüphaneler:
+Required libraries:
 
 pip install python-dateutil
 
 
 📄 Lisans
 
-Bu proje MIT Lisansı altında lisanslanmıştır.
-Lisans, bu projenin özgürce kullanılmasına, değiştirilmesine ve dağıtılmasına izin verir. Ancak, yazılım “olduğu gibi” sağlanır ve herhangi bir garanti sunulmaz.
+This project is licensed under the MIT License.
 
-Ayrıntılı bilgi için  [LICENSE](LICENSE) dosyasını inceleyebilirsiniz.
+The license permits the free use, modification, and distribution of this project. However, the software is provided "as is" and offers no warranty.
+
+For detailed information, please review the [LICENSE](LICENSE) file.
