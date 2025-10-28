@@ -3,131 +3,151 @@ import csv
 from datetime import datetime
 from dateutil.relativedelta import relativedelta
 
+# Database connection
 con = sqlite3.connect("service.db")
 cursor = con.cursor()
 
-#Katalog tablosu
+# Catalog table
 cursor.execute("""
-CREATE TABLE IF NOT EXISTS urun_katalog (
+CREATE TABLE IF NOT EXISTS product_catalog (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
-    marka TEXT NOT NULL,
+    brand TEXT NOT NULL,
     model TEXT NOT NULL,
-    garanti_suresi_ay INTEGER NOT NULL
-)
-""")
-#Urunler tablosu
-cursor.execute("""
-CREATE TABLE IF NOT EXISTS urunler (
-    id_ INTEGER PRIMARY KEY AUTOINCREMENT,
-    katalog_id INTEGER,
-    satis_tarihi TEXT NOT NULL,
-    seri_no TEXT NOT NULL,
-    FOREIGN KEY (katalog_id) REFERENCES urun_katalog(id)
+    warranty_period_months INTEGER NOT NULL
+               
 )
 """)
 
-#Servis tablosu
+# Products table
 cursor.execute("""
-CREATE TABLE IF NOT EXISTS servis (
+CREATE TABLE IF NOT EXISTS products (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
-    urun_id INTEGER NOT NULL,
-    ariza TEXT NOT NULL,
-    durum TEXT NOT NULL,
-    ucret REAL NOT NULL,
-    servis_durumu TEXT NOT NULL,
-    FOREIGN KEY (urun_id) REFERENCES urunler(id_)
-    
+    catalog_id INTEGER,
+    sell_date TEXT NOT NULL,
+    serial_number TEXT NOT NULL,
+    FOREIGN KEY (catalog_id) REFERENCES product_catalog(id)
+)
+""")
+
+# Service table
+cursor.execute("""
+CREATE TABLE IF NOT EXISTS service_records (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    product_id INTEGER NOT NULL,
+    fault_description TEXT NOT NULL,
+    status TEXT NOT NULL,
+    fee REAL NOT NULL,
+    service_status TEXT NOT NULL,
+    FOREIGN KEY (product_id) REFERENCES products(id)
 )
 """)
 
 con.commit()
-#Katalog'a yeni urun eklenilmesini saglayan fonksiyon
-def katalog_ekle(marka, model, garanti_suresi_ay):
-    cursor.execute("INSERT INTO urun_katalog (marka, model, garanti_suresi_ay) VALUES (?, ?, ?)",
-                   (marka, model, garanti_suresi_ay))
+
+# Function that adds new products to the catalog
+def add_to_catalog(brand, model, warranty_period_months):
+    cursor.execute("INSERT INTO product_catalog (brand, model, warranty_period_months) VALUES (?, ?, ?)",
+                   (brand, model, warranty_period_months))
     con.commit()
-#Satilan urunleri urunler listesine ekleyen fonksiyon
-def urun_ekle(katalog_id, satis_tarihi, seri_no):
-    cursor.execute("INSERT INTO urunler (katalog_id, satis_tarihi, seri_no) VALUES (?, ?, ?)",
-                   (katalog_id, satis_tarihi, seri_no))
+
+# Function that adds sold products to the products list
+def add_sold_product(catalog_id, sell_date, serial_number):
+    cursor.execute("INSERT INTO products (catalog_id, sell_date, serial_number) VALUES (?, ?, ?)",
+                   (catalog_id, sell_date, serial_number))
     con.commit()
-#Id'si girilen urunun garantisi olup olmadigini kontrol eden fonksiyon
-def garanti_durumu(urun_id):
+
+# Function that checks if the entered product ID is under warranty
+def check_warranty_status(product_id):
     cursor.execute("""
-    SELECT satis_tarihi, garanti_suresi_ay FROM urunler
-    JOIN urun_katalog ON urunler.katalog_id = urun_katalog.id
-    WHERE urunler.id_ = ?
-    """, (urun_id,))
+    SELECT sell_date, warranty_period_months FROM products
+    JOIN product_catalog ON products.catalog_id = product_catalog.id
+    WHERE products.id = ?
+    """, (product_id,))
     result = cursor.fetchone()
+    
     if not result:
-        print("Urun bulunamadı.")
+        print("Product not found.")
         return False
-    satis_tarihi_str, garanti_suresi_ay = result
-    satis_tarihi = datetime.strptime(satis_tarihi_str, "%Y-%m-%d")
-    garanti_bitis = satis_tarihi + relativedelta(months=+garanti_suresi_ay)
-    if datetime.now() <= garanti_bitis:
-        print("Garanti kapsamında.")
+    
+    
+    sell_date_str, warranty_period_months = result
+    sell_date = datetime.strptime(sell_date_str, "%Y-%m-%d")
+    warranty_end_date = sell_date + relativedelta(months=+warranty_period_months)
+    
+    if datetime.now() <= warranty_end_date:
+        print("Under warranty.")
         return True
     else:
-        print("Garanti suresi dolmus.")
+        print("Warranty period expired.")
         return False
-#Servise urun eklenilmesini saglayan fonksiyon
-def servis_ekle(urun_id, ariza, ucret):
-    if garanti_durumu(urun_id):
-        durum = "Garantili"
-        ucret = 0
+
+# Function that enables adding a product to the service
+def add_to_service(product_id, fault_description, fee):
+    # check_warranty_status returns True if under warranty
+    if check_warranty_status(product_id):
+        status = "Warrantied"
+        fee = 0  # Fee set to 0 if under warranty
     else:
-        durum = "Garanti Dısı"
-    cursor.execute("INSERT INTO servis (urun_id, ariza, durum, ucret, servis_durumu) VALUES (?, ?, ?, ?, ?)",
-    (urun_id, ariza, durum, ucret, "Serviste"))
+        status = "Out of Warranty"
+    
+    cursor.execute("INSERT INTO service_records (product_id, fault_description, status, fee, service_status) VALUES (?, ?, ?, ?, ?)",
+    (product_id, fault_description, status, fee, "In Service"))
     con.commit()
-#Katalogdaki urunleri listeleyen fonksiyon
-def listele_katalog():
-    cursor.execute("SELECT * FROM urun_katalog")
+
+# Function that lists products in the catalog 
+def list_catalog():
+    cursor.execute("SELECT * FROM product_catalog")
     return cursor.fetchall()
-#Satılan urunleri listeleyen fonksiyon
-def listele_urunler():
+
+# Function that lists sold products
+def list_products():
     cursor.execute("""
-    SELECT urunler.id_, marka, model, satis_tarihi, seri_no FROM urunler
-    JOIN urun_katalog ON urunler.katalog_id = urun_katalog.id
+    SELECT products.id, brand, model, sell_date, serial_number FROM products
+    JOIN product_catalog ON products.catalog_id = product_catalog.id
     """)
     for row in cursor.fetchall():
         print(row)
-#Servisteki urunleri listeleyen fonksiyon
-def listele_servisler():
-    cursor.execute("SELECT * FROM servis")
+
+# Function that lists products in service
+def list_service_records():
+    cursor.execute("SELECT * FROM service_records")
     for row in cursor.fetchall():
         print(row)
-def servis_guncelleme(servis_id):
+
+# Function to update the service status
+def update_service_status(service_id):
     cursor.execute("""
-    UPDATE servis
-    SET servis_durumu = 'Tamamlandı'
+    UPDATE service_records
+    SET service_status = 'Completed'
     WHERE id = ?
-    """, (servis_id,))
+    """, (service_id,))
     con.commit()
-    print("Servis durumu tamalandı olarak guncellendi")
-    
-    
-#csv dosyası ile katalog eklenmesini saglayan fonksiyon
-def csv_katalog_ekle(dosya_adi):
+    # Service status updated to Completed
+    print("Service status updated to Completed")
+
+# Function that enables adding a catalog via CSV file
+def add_catalog_from_csv(file_name):
     try:
-        with open(dosya_adi,newline="",encoding="utf-8-sig") as csvfile:
-            liste = csv.DictReader(csvfile)
-            urunler = list(liste)
-        for satir in urunler:
-            marka = satir["marka"]
-            model = satir["model"]
+        with open(file_name, newline="", encoding="utf-8-sig") as csvfile:
+            product_list = csv.DictReader(csvfile)
+            products_to_add = list(product_list)
+        
+        for row in products_to_add:
+            brand = row["marka"]
+            model = row["model"]
             try:
-                garanti = int(satir["garanti_suresi_ay"])
+                warranty = int(row["garanti_suresi_ay"])
             except ValueError:
-                print(f"gecersiz garanti suresi: {satir['garanti_suresi_ay']}")
+                print(f"Invalid warranty period: {row['garanti_suresi_ay']}")
                 continue
-            katalog_ekle(marka,model,garanti)
-        print("Katalog eklendi")
+            
+            add_to_catalog(brand, model, warranty)
+        
+        print("Catalog added")
+        
     except FileNotFoundError:
-        print("CSV dosyası bulunamadı")
+
+        print("CSV file not found")
     except KeyError as e:
-        print(f"geçersiz değer:{e}")
 
-
-
+        print(f"Invalid value:{e}")
