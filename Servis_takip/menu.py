@@ -1,85 +1,94 @@
 import service as sc
 from datetime import datetime
 import gui
-#Fonksiyonlari terminalde calistiran fonksiyon
+
+# Function that runs functions in the terminal
 def menu():
     while True:
-        print("\n--- Hos geldiniz lutfen yapmak istediginiz islemi seciniz ---")
-        print("1. Kataloga urun ekle")
-        print("2. Satılan urun ekle")
-        print("3. Urunleri listele")
-        print("4. Urun garantisini kontrol et")
-        print("5. Servise Ürün Ekle")
-        print("6. Servis kayıtlarını listele")
-        print("7. Katalogu listele")
-        print("8. Csv den urun ekle")
-        print("9. Servis durumunu guncelle")
+        print("\n--- Welcome! Please select the action you would like to take. ---")
+        print("1. Add product to the catalog")
+        print("2. Add a sold item")
+        print("3. List products")
+        print("4. Check product warranty")
+        print("5. Add Product to Service")
+        print("6. View service records")
+        print("7. List catalog")
+        print("8. Add product from CSV")
+        print("9. Update service status")
         print("0. GUI")
-        print("e. Cikis")
+        print("e. Exit")
 
-        secim = input("Seciminiz: ")
+        choice = input("Choice: ")
 
-        if secim == "1":
-            marka = input("Marka: ")
+        if choice == "1":
+            brand = input("Brand: ")
             model = input("Model: ")
-            garanti = input("Garanti Süresi (Ay): ")
-            if not garanti.isdigit():
-                print("Garanti süresi sayı olmalı!")
+            warranty = input("Warranty Period (Month): ")
+            if not warranty.isdigit():
+                print("Warranty period must be a number!")
                 continue
-            sc.katalog_ekle(marka, model, int(garanti))
-            print("Ürün kataloğa eklendi.")
+            sc.add_to_catalog(brand, model, int(warranty))
+            print("The product has been added to the catalog.")
 
-        elif secim == "2":
-            katalog_id = input("Katalog ID: ")
-            satis_tarihi = input("Satış Tarihi (YYYY-AA-GG): ")
-            seri_no = input("Seri No: ")
+        elif choice == "2":
+            catalog_id = input("Catalog ID: ")
+            sell_date = input("Sell Date (YYYY-MM-DD): ")
+            serial_number = input("Serial No: ")
             try:
-                datetime.strptime(satis_tarihi, "%Y-%m-%d")
+                datetime.strptime(sell_date, "%Y-%m-%d")
             except ValueError:
-                print("Tarih formatı hatalı!")
+                print("Date format is incorrect!")
                 continue
-            sc.urun_ekle(int(katalog_id), satis_tarihi, seri_no)
-            print("Satılan ürün eklendi.")
+            sc.add_sold_product(int(catalog_id), sell_date, serial_number)
+            print("Sold item added.")
 
-        elif secim == "3":
-            print("\n--- Satılan Urunler ---")
-            sc.listele_urunler()
+        elif choice == "3":
+            print("\n--- Sold Products ---")
+            sc.list_products()
 
-        elif secim == "4":
-            urun_id = input("Garanti durumunu kontrol etmek istediğiniz ürünün ID'si: ")
-            sc.garanti_durumu(int(urun_id))
+        elif choice == "4":
+            product_id = input("ID of the product whose warranty status you want to check: ")
+            sc.check_warranty_status(int(product_id))
+            
+        elif choice == "5":
+            product_id = input("Product ID: ")
+            fault_description = input("Fault Description: ")
+            try:
+                fee = float(input("Fee (0 if under warranty): "))
+            
+            except ValueError:
+                print("Invalid fee")
+                continue
+            
+            sc.add_to_service(int(product_id), fault_description, fee)
+            print("Service record added.")
         
-        elif secim == "5":
-            urun_id = input("urun id: ")
-            ariza = input("ariza: ")
-            try:
-                ucret = float(input("ucret (eğer garanti kapsamındaysa 0 olacak): "))
-            except ValueError:
-                print("gecersiz ucret")
-                continue
-            sc.servis_ekle(int(urun_id), ariza, ucret)
-            print("servis kaydı eklendi.")
-        elif secim == "6":
-            print("\n--- Servis Kayıtları ---")
-            sc.listele_servisler()
-       
-        elif secim == "7":
-            print("Katalogdaki urunler\n")
-            [print(urun) for urun in sc.listele_katalog()]
-        elif secim == "8":
-            dosya = input("Dosya seciniz: ")
-            sc.csv_katalog_ekle(dosya)
-        elif secim == "9":
-            servis_id = input("Servis id'girin: ")
-            sc.servis_guncelleme(int(servis_id))
-        elif secim == "0":
+        elif choice == "6":
+            print("\n--- Service Records ---")
+            sc.list_service_records()
+        
+        elif choice == "7":
+            print("Products in Catalog\n")
+            [print(product) for product in sc.list_catalog()]
+        
+        elif choice == "8":
+            file_name = input("Select file: ")
+            sc.add_catalog_from_csv(file_name)
+            
+        
+        elif choice == "9":
+            service_id = input("Enter Service ID: ")
+            sc.update_service_status(int(service_id))
+
+        elif choice == "0":
             gui.GUI()
-        elif secim.lower() == "e":
-             print("Cıkılıyor...")
-             break
-        
+
+        elif choice.lower() == "e":
+            print("Exiting...")
+            break
+            
         else:
-            print("Gecersiz secim! lutfen 1-9 arası bir sayı girin.")
+            print("Invalid choice! Please enter a number between 1-9.")
 
 if __name__ == "__main__":
     menu()
